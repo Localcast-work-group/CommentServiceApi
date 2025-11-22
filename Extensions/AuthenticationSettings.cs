@@ -1,4 +1,4 @@
-﻿namespace CategoryService.Api.Extensions
+﻿namespace CommentService.Api.Extensions
 {
     public class AuthenticationSettings
     {

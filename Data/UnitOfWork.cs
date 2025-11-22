@@ -1,48 +1,35 @@
-﻿using CategoryService.Api.Interfaces;
-using CategoryService.Api.Interfaces.Models;
-using CategoryService.Api.Interfaces.Repositories;
-using CategoryService.Api.Repositories;
-using CourseService.Api.Services;
-using System.Collections;
+﻿using CommentService.Api.Interfaces;
+using CommentService.Api.Interfaces.Repositories;
+using CommentService.Api.Repositories;
 
-namespace CategoryService.Api.Data
+namespace CommentService.Api.Data
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _dbContext;
-        private Hashtable _repositories;
-        private ICategoryRepository _categoryRepository;
+
+        private ICommentRepository _commentRepository;
+        private IReactionRepository _reactionRepository;
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
-        public ICategoryRepository Categories
+
+        public ICommentRepository Comments
         {
             get
             {
-                return _categoryRepository ??= new CategoryRepository(_dbContext);
+                return _commentRepository ??= new CommentRepository(_dbContext);
             }
         }
 
-        // for BaseService
-        public IBaseRepository<T> Repository<T>() where T : class, IModelWithNameAndId
+        public IReactionRepository Reactions
         {
-            if (_repositories == null)
-                _repositories = new Hashtable();
-
-            var type = typeof(T).Name;
-
-            if (!_repositories.ContainsKey(type))
+            get
             {
-                var repositoryType = typeof(BaseRepository<>);
-                var repositoryInstance = Activator.CreateInstance(
-                    repositoryType.MakeGenericType(typeof(T)), _dbContext);
-
-                _repositories.Add(type, repositoryInstance);
+                return _reactionRepository ??= new ReactionRepository(_dbContext);
             }
-
-            return (IBaseRepository<T>)_repositories[type];
         }
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -1,12 +1,11 @@
-﻿using CategoryService.Api.Interfaces.Models;
-using CategoryService.Api.Interfaces.Repositories;
+﻿using CommentService.Api.Interfaces.Repositories;
 
-namespace CategoryService.Api.Interfaces
+namespace CommentService.Api.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        ICategoryRepository Categories { get; }
-        IBaseRepository<T> Repository<T>() where T : class, IModelWithNameAndId;
+        ICommentRepository Comments { get; }
+        IReactionRepository Reactions { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CategoryService.Api.Models.Shared
+﻿namespace CommentService.Api.Models.Shared
 {
     public class ModelId
     {

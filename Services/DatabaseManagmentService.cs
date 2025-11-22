@@ -1,8 +1,7 @@
-﻿using CategoryService.Api.Data;
-using CategoryService.Api.Interfaces.Services;
+﻿using CommentService.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace CategoryService.Api.Services
+namespace CommentService.Api.Services
 {
     public static class DatabaseManagmentService
     {
@@ -12,8 +11,6 @@ namespace CategoryService.Api.Services
             {
                 var service = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
                 await service.Database.MigrateAsync();
-                var categoryService = serviceScope.ServiceProvider.GetService<ICategoryService>();
-                await categoryService.Seed();
             }
         }
     }

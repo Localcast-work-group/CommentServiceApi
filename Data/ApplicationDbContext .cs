@@ -1,13 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommentService.Api.Models.Comment;
+using CommentService.Api.Models.Reaction;
+using Microsoft.EntityFrameworkCore;
 using System;
-using CategoryService.Api.Models;
 using System.Reflection;
 
-namespace CategoryService.Api.Data
+namespace CommentService.Api.Data
 {
     public class ApplicationDbContext :DbContext
     {
-        public DbSet<Category> Category { get; set; }
+        public DbSet<Reaction> Reactions { get; set; }
+        public DbSet<Comment> Comments{ get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -17,11 +19,28 @@ namespace CategoryService.Api.Data
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             
-            modelBuilder.Entity<Category>(entity =>
+
+            modelBuilder.Entity<Comment>(entity =>
             {
-                entity.HasKey(r => r.Id);
-                entity.HasIndex(x => x.Name).IsUnique();
+                entity.HasKey(c => c.Id);
+
+                entity.HasOne(c => c.ParentComment)
+                      .WithMany(c => c.Replies)
+                      .HasForeignKey(c => c.ParentCommentId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
+
+           
+
+            modelBuilder.Entity<Reaction>(entity =>
+            {
+                entity.HasOne(cr => cr.Comment)
+                      .WithMany(c => c.Reactions)
+                      .HasForeignKey(cr => cr.TargetId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+
         }
     }
 }

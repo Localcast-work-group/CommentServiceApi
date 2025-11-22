@@ -1,5 +1,5 @@
-﻿namespace CategoryService.Api.Extensions
-{
+﻿namespace CommentService.Api.Extensions
+{   
     public static class MimeType
     {
         public static string GetMimeType(string extension)

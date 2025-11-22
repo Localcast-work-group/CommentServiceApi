@@ -1,37 +1,32 @@
-using CategoryService.Api.Consumers;
-using CategoryService.Api.Data;
-using CategoryService.Api.Extensions;
-using CategoryService.Api.Filters;
-using CategoryService.Api.Interfaces;
-using CategoryService.Api.Interfaces.Services;
-using CategoryService.Api.Services;
+using CommentService.Api.Data;
+using CommentService.Api.Extensions;
+using CommentService.Api.Interfaces;
+using CommentService.Api.Interfaces.Services;
+using CommentService.Api.Services;
 using Elastic.Ingest.Elasticsearch.DataStreams;
 using Elastic.Serilog.Sinks;
 using Elastic.Transport;
 using FluentValidation;
-using FluentValidation.AspNetCore;
-using MassTransit;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
 using System.Text;
-namespace CategoryService.Api
+namespace CommentService.Api
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            Serilog.Debugging.SelfLog.Enable(Console.Error);
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
             AuthenticationSettings authenticationSettings = new AuthenticationSettings();
             configuration.GetSection("JWT").Bind(authenticationSettings);
-            var connectionString = builder.Configuration.GetConnectionString("CategoryDb");
+            var connectionString = builder.Configuration.GetConnectionString("CommentDb");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();saddsaasdasdsad
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
@@ -46,13 +41,10 @@ namespace CategoryService.Api
                     });
             });
             builder.Services.AddSingleton(authenticationSettings);
-            builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
-            builder.Services.AddScoped<ICategoryService,  CategoryService.Api.Services.CategoryService>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.Configure<FormOptions>(options =>
-            {
-                options.MultipartBodyLengthLimit = 5L * 1024 * 1024 * 1024;
-            });
+            builder.Services.AddScoped<ICommentService, Services.CommentService>();
+            builder.Services.AddScoped<IReactionService, ReactionService>();
+
+
             builder.Services.AddFluentValidationAutoValidation(configuration =>
             {
                 configuration.DisableBuiltInModelValidation = true;
@@ -74,10 +66,7 @@ namespace CategoryService.Api
 
             builder.Services.AddOpenApiDocument();
 
-            builder.Services.AddControllers(options =>
-            {
-                options.Filters.Add<ApiExceptionFilter>();
-            }); ;
+            builder.Services.AddControllers();
              ;
             builder.Services.AddAuthentication(options =>
             {
@@ -122,42 +111,22 @@ namespace CategoryService.Api
                     }
                 });
             });
-            builder.Services.AddMassTransit(
-                options => {
-                    options.SetKebabCaseEndpointNameFormatter();
-                    options.AddConsumer<VideoCreatedEventConsumer>();
-                    options.UsingRabbitMq((context, cfg) =>
-                    {
-                        cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
-                        {
-                            h.Username(builder.Configuration["RabbitMQ:Username"]);
-                            h.Password(builder.Configuration["RabbitMQ:Password"]);
-                        });
-
-                        cfg.ConfigureEndpoints(context);
-                        cfg.ReceiveEndpoint("category-service-video-created", e =>
-                        {
-                            e.ConfigureConsumer<VideoCreatedEventConsumer>(context);
-                        });
-                    });
-
-                });
             builder.Host.UseSerilog((ctx, lc) =>
-                lc.ReadFrom.Configuration(ctx.Configuration) 
+                lc.ReadFrom.Configuration(ctx.Configuration)
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
                 .WriteTo.Elasticsearch(new[] { new Uri(builder.Configuration["Elastic:Uri"]) }, opts =>
-                    {
-                        opts.DataStream = new DataStreamName("logs", "category-service");
+                {
+                    opts.DataStream = new DataStreamName("logs", "comment-service");
 
-                    }
-                ,transport =>
-                    {
-                        transport.Authentication(new BasicAuthentication(
-                            "elastic",
-                            builder.Configuration["Elastic:Password"]));
-                    } 
+                }
+                , transport =>
+                {
+                    transport.Authentication(new BasicAuthentication(
+                        "elastic",
+                        builder.Configuration["Elastic:Password"]));
+                }
                 )
                .Enrich.WithProperty("Environment", ctx.HostingEnvironment.EnvironmentName)
              );

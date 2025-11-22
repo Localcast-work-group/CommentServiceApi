@@ -1,4 +1,4 @@
-﻿namespace CategoryService.Api.Interfaces.Models
+﻿namespace CommentService.Api.Interfaces.Models
 {
     //interface helps build abstract service
     public interface IModelWithNameAndId

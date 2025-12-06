@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentService.Api", "src\CommentService.Api.csproj", "{5FEA8C04-F16A-8CC9-5B1F-2C3694FED728}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentService.UnitTests", "tests\CommentService.UnitTests\CommentService.UnitTests.csproj", "{087F23DB-F9E5-838B-0FB4-1052F6B58457}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentService.IntegrationTests", "tests\CommentService.IntegrationTests\CommentService.IntegrationTests.csproj", "{6357071D-1C70-41A5-9D48-5AACD7CE14B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5FEA8C04-F16A-8CC9-5B1F-2C3694FED728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FEA8C04-F16A-8CC9-5B1F-2C3694FED728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FEA8C04-F16A-8CC9-5B1F-2C3694FED728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FEA8C04-F16A-8CC9-5B1F-2C3694FED728}.Release|Any CPU.Build.0 = Release|Any CPU
+		{087F23DB-F9E5-838B-0FB4-1052F6B58457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{087F23DB-F9E5-838B-0FB4-1052F6B58457}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{087F23DB-F9E5-838B-0FB4-1052F6B58457}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{087F23DB-F9E5-838B-0FB4-1052F6B58457}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6357071D-1C70-41A5-9D48-5AACD7CE14B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6357071D-1C70-41A5-9D48-5AACD7CE14B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6357071D-1C70-41A5-9D48-5AACD7CE14B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6357071D-1C70-41A5-9D48-5AACD7CE14B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{087F23DB-F9E5-838B-0FB4-1052F6B58457} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{6357071D-1C70-41A5-9D48-5AACD7CE14B8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B1470C76-278C-40EA-9658-F7EEC54F9342}
+	EndGlobalSection
+EndGlobal

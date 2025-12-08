@@ -34,6 +34,8 @@ namespace CommentService.Api
             var connectionString = builder.Configuration.GetConnectionString("CommentDb");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
              options.UseNpgsql(connectionString));
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddMemoryCache();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddAppAuthorization();
@@ -51,7 +53,6 @@ namespace CommentService.Api
                                .WithExposedHeaders("www-authenticate");
                     });
             });
-            builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSingleton(authenticationSettings);
             builder.Services.AddScoped<IVideoCourseService, Services.VideoCourseService>();
             builder.Services.AddScoped<ICommentService, Services.CommentService>();
@@ -71,6 +72,7 @@ namespace CommentService.Api
                 var settings = serviceProvider.GetRequiredService<IOptions<IdentitySettings>>().Value;
                 client.BaseAddress = new Uri(settings.Authority);
             })
+            
             .AddHttpMessageHandler<AuthenticationDelegatingHandler>();
             builder.Services.AddMassTransit(
                 options => {
@@ -79,11 +81,8 @@ namespace CommentService.Api
                     options.AddConsumer<UserCoursePermissionsUpdatedConsumer>();
                     options.UsingRabbitMq((context, cfg) =>
                     {
-                        cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
-                        {
-                            h.Username(builder.Configuration["RabbitMQ:Username"]);
-                            h.Password(builder.Configuration["RabbitMQ:Password"]);
-                        });
+                        var connectionString = builder.Configuration.GetConnectionString("rabbitmq");
+                        cfg.Host(new Uri(connectionString));
                         cfg.ReceiveEndpoint("comment-service", e =>
                         {
                             e.ConfigureConsumer<VideoCreatedEventConsumer>(context);
@@ -193,7 +192,6 @@ namespace CommentService.Api
             app.UseCors("AllowAllOrigins");
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseHttpsRedirection();
             app.MapControllers();
             app.Run();
         }

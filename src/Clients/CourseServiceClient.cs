@@ -45,5 +45,9 @@ namespace CommentService.Api.Clients
             }
         }
 
+        public Task<CourseDetailsResponse> GetCourseDetails(Guid courseId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

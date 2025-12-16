@@ -22,7 +22,7 @@ namespace CommentService.Api.Controllers
             _reactionService = reactionService;
         }
         [HttpGet("{VideoId}", Name = "GetComments")]
-
+        [AllowAnonymous]
         public async Task<IActionResult> Get(Guid VideoId)
         {
             

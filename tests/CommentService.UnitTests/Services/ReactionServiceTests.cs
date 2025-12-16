@@ -55,9 +55,11 @@ namespace CommentService.UnitTests.Services
             // 1. ARRANGE
             var targetId = Guid.NewGuid();
             var courseId = Guid.NewGuid();
+            _commentRepoMock.Setup(x => x.GetByIdAsync(targetId))
+                .ReturnsAsync(new Comment { Id = targetId, VideoId = Guid.NewGuid() });
 
-            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(targetId))
-                .ReturnsAsync(new VideoCourse { CourseId = courseId });
+            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(It.IsAny<Guid>()))
+                .ReturnsAsync(new VideoCourse {CourseId = courseId, VideoId = targetId, IsAllowAnonymousComments = true });
 
             _authServiceMock.Setup(x => x.AuthorizeAsync(
                     It.IsAny<ClaimsPrincipal>(),
@@ -87,7 +89,8 @@ namespace CommentService.UnitTests.Services
             // 1. ARRANGE
             var targetId = Guid.NewGuid();
             var courseId = Guid.NewGuid();
-
+            _commentRepoMock.Setup(x => x.GetByIdAsync(targetId))
+    .ReturnsAsync(new Comment { Id = targetId, VideoId = Guid.NewGuid() });
             var existingReaction = new Reaction
             {
                 UserId = _currentUserId,
@@ -95,8 +98,8 @@ namespace CommentService.UnitTests.Services
                 IsLike = true
             };
 
-            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(targetId))
-                .ReturnsAsync(new VideoCourse { CourseId = courseId });
+            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(It.IsAny<Guid>()))
+                .ReturnsAsync(new VideoCourse { CourseId = courseId, VideoId = targetId, IsAllowAnonymousComments = true });
 
             _authServiceMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), courseId, It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
@@ -121,10 +124,12 @@ namespace CommentService.UnitTests.Services
             // 1. ARRANGE
             var targetId = Guid.NewGuid();
             var courseId = Guid.NewGuid();
-            var existingReaction = new Reaction { UserId = _currentUserId, TargetId = targetId };
 
-            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(targetId))
-                .ReturnsAsync(new VideoCourse { CourseId = courseId });
+            var existingReaction = new Reaction { UserId = _currentUserId, TargetId = targetId };
+            _commentRepoMock.Setup(x => x.GetByIdAsync(targetId))
+    .ReturnsAsync(new Comment { Id = targetId, VideoId = Guid.NewGuid() });
+            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(It.IsAny<Guid>()))
+                .ReturnsAsync(new VideoCourse { CourseId = courseId, VideoId = targetId, IsAllowAnonymousComments = true });
 
             _authServiceMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), courseId, It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
@@ -146,9 +151,10 @@ namespace CommentService.UnitTests.Services
             // 1. ARRANGE
             var targetId = Guid.NewGuid();
             var courseId = Guid.NewGuid();
-
-            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(targetId))
-                .ReturnsAsync(new VideoCourse { CourseId = courseId });
+            _commentRepoMock.Setup(x => x.GetByIdAsync(targetId))
+    .ReturnsAsync(new Comment { Id = targetId, VideoId = Guid.NewGuid() });
+            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(It.IsAny<Guid>()))
+                .ReturnsAsync(new VideoCourse { CourseId = courseId, VideoId = targetId, IsAllowAnonymousComments = true });
 
             _authServiceMock.Setup(x => x.AuthorizeAsync(
                     It.IsAny<ClaimsPrincipal>(),
@@ -176,7 +182,7 @@ namespace CommentService.UnitTests.Services
             _commentRepoMock.Setup(x => x.GetByIdAsync(commentId))
                 .ReturnsAsync(new Comment { Id = commentId, VideoId = Guid.NewGuid() });
             _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(It.IsAny<Guid>()))
-                .ReturnsAsync(new VideoCourse { CourseId = courseId });
+                .ReturnsAsync(new VideoCourse { CourseId = courseId, VideoId = commentId, IsAllowAnonymousComments = true });
 
             _authServiceMock.Setup(x => x.AuthorizeAsync(
                     It.IsAny<ClaimsPrincipal>(),

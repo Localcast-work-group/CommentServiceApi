@@ -48,7 +48,7 @@ namespace CommentService.UnitTests.Consumers
             await _consumer.Consume(_contextMock.Object);
 
             // 3. ASSERT
-            _videoCourseServiceMock.Verify(x => x.CreateCourseVideo(message.Id, message.CourseId), Times.Once);
+            _videoCourseServiceMock.Verify(x => x.CreateCourseVideo(message.Id, message.CourseId,message.AllowAnonymous), Times.Once);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace CommentService.UnitTests.Consumers
             };
             _contextMock.Setup(x => x.Message).Returns(message);
 
-            _videoCourseServiceMock.Setup(x => x.CreateCourseVideo(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _videoCourseServiceMock.Setup(x => x.CreateCourseVideo(It.IsAny<Guid>(), It.IsAny<Guid>(),message.AllowAnonymous))
                 .ThrowsAsync(new Exception("Database error"));
 
             // 2. ACT
@@ -72,7 +72,7 @@ namespace CommentService.UnitTests.Consumers
             // 3. ASSERT
             Assert.Null(exception); 
 
-            _videoCourseServiceMock.Verify(x => x.CreateCourseVideo(message.Id, message.CourseId), Times.Once);
+            _videoCourseServiceMock.Verify(x => x.CreateCourseVideo(message.Id, message.CourseId, message.AllowAnonymous), Times.Once);
         }
     }
 }

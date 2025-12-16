@@ -2,25 +2,36 @@
 using System.Security.Claims;
 using CommentService.Api.Authorization.Requiremments;
 using CommentService.Api.Interfaces.Services;
+using CommentService.Api.Models.VideoCourse;
 
 namespace CommentService.Api.Authorization.Handlers
 {
-    public class CanSeeCommentsInCourseHandler : AuthorizationHandler<CanSeeCommentsInCourseRequirement, Guid>
+    public class CanSeeCommentsInCourseHandler : AuthorizationHandler<CanSeeCommentsInCourseRequirement, VideoCourse>
     {
         private readonly ICoursePermissionsService _coursePermissionService;
-        public CanSeeCommentsInCourseHandler(ICoursePermissionsService coursePermissionService)
+        private readonly IVideoCourseService _videoCourseService;
+        public CanSeeCommentsInCourseHandler(ICoursePermissionsService coursePermissionService, IVideoCourseService videoCourseService)
         {
             _coursePermissionService = coursePermissionService;
+            _videoCourseService = videoCourseService;
         }
         protected override async Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             CanSeeCommentsInCourseRequirement requirement,
-            Guid resource)
+            VideoCourse resource)
         {
+            if (resource.IsAllowAnonymousComments)
+            {
+                context.Succeed(requirement);
+                await Task.CompletedTask;
+                return;
+
+            }
             if (context.User.IsInRole("Admin"))
             {
                 context.Succeed(requirement);
                 await Task.CompletedTask;
+                return;
             }
             
 
@@ -28,13 +39,17 @@ namespace CommentService.Api.Authorization.Handlers
             if (!Guid.TryParse(userIdString, out var userId))
             {
                 await Task.CompletedTask;
-            }
-            bool hasAccess = await _coursePermissionService.HasAccessAsync(Guid.Parse(userIdString), resource);
+                return;
 
-            if (!hasAccess)
+            }
+            bool hasAccess = await _coursePermissionService.HasAccessAsync(Guid.Parse(userIdString), resource.CourseId);
+
+            if (hasAccess)
             {
                 context.Succeed(requirement);
                 await Task.CompletedTask;
+                return;
+
             }
 
 

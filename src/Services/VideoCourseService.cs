@@ -19,14 +19,42 @@ namespace CommentService.Api.Services
             _videoServiceClient = videoServiceClient;
         }
 
-        public async Task CreateCourseVideo(Guid videoId, Guid courseId)
+        public async Task CreateCourseVideo(Guid videoId, Guid courseId, bool isAllowAnonymous)
         {
             VideoCourse videoCourse = new VideoCourse
             {
                 VideoId = videoId,
-                CourseId = courseId
+                CourseId = courseId,
+                IsAllowAnonymousComments = isAllowAnonymous
             };
             await _unitOfWork.VideoCourses.AddAsync(videoCourse);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        public async Task UpdateCourseVideo(Guid videoId, Guid courseId, bool isAllowAnonymous)
+        {
+            VideoCourse? videoCourse = await _unitOfWork.VideoCourses.GetOneAsync(videoId);
+            if (videoCourse == null)
+            {
+                VideoCourse newVideoCourse = new VideoCourse
+                {
+                    VideoId = videoId,
+                    CourseId = courseId,
+                    IsAllowAnonymousComments = isAllowAnonymous
+                };
+                await _unitOfWork.VideoCourses.AddAsync(newVideoCourse);
+            }
+            else
+            {
+                videoCourse.CourseId = courseId;
+                videoCourse.IsAllowAnonymousComments = isAllowAnonymous;
+
+            }
+            await _unitOfWork.SaveChangesAsync();
+        }
+        public async Task DeleteCourseVideo(Guid id)
+        {
+            VideoCourse? videoCourse = await _unitOfWork.VideoCourses.GetOneAsync(id);
+            await _unitOfWork.VideoCourses.DeleteAsync(videoCourse);
             await _unitOfWork.SaveChangesAsync();
         }
 
@@ -45,7 +73,8 @@ namespace CommentService.Api.Services
                     videoCourse = new VideoCourse
                     {
                         VideoId = videoCourseResponse.VideoId,
-                        CourseId = videoCourseResponse.CourseId
+                        CourseId = videoCourseResponse.CourseId,
+                        IsAllowAnonymousComments = videoCourseResponse.AllowAnonymous
                     };
                     await _unitOfWork.VideoCourses.AddAsync(videoCourse);
                     await _unitOfWork.SaveChangesAsync();

@@ -21,6 +21,7 @@ using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
 using System.Text;
 using VideoService.Contracts.Clients;
+using VideoService.Contracts.Events;
 namespace CommentService.Api
 {
     public class Program
@@ -40,18 +41,20 @@ namespace CommentService.Api
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddAppAuthorization();
             builder.Services.AddScoped<IUserContext, UserContext>();
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
 
-                    builder =>
-                    {
+                  builder =>
+                  {
 
-                        builder.AllowAnyOrigin()
-                               .AllowAnyHeader()
-                               .AllowAnyMethod()
-                               .WithExposedHeaders("www-authenticate");
-                    });
+                      builder.WithOrigins("http://localhost:4200")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials()
+                   .WithExposedHeaders("www-authenticate");
+                  });
             });
             builder.Services.AddSingleton(authenticationSettings);
             builder.Services.AddScoped<IVideoCourseService, Services.VideoCourseService>();
@@ -78,14 +81,19 @@ namespace CommentService.Api
                 options => {
                     options.SetKebabCaseEndpointNameFormatter();
                     options.AddConsumer<VideoCreatedEventConsumer>();
+                    options.AddConsumer<VideoUpdatedEventConsumer>();
+                    options.AddConsumer<VideoDeletedEventConsumer>();
                     options.AddConsumer<UserCoursePermissionsUpdatedConsumer>();
                     options.UsingRabbitMq((context, cfg) =>
                     {
                         var connectionString = builder.Configuration.GetConnectionString("rabbitmq");
+                        cfg.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(5)));
                         cfg.Host(new Uri(connectionString));
                         cfg.ReceiveEndpoint("comment-service", e =>
                         {
                             e.ConfigureConsumer<VideoCreatedEventConsumer>(context);
+                            e.ConfigureConsumer<VideoUpdatedEventConsumer>(context);
+                            e.ConfigureConsumer<VideoDeletedEventConsumer>(context);
                             e.ConfigureConsumer<UserCoursePermissionsUpdatedConsumer>(context);
                         });
                         cfg.ConfigureEndpoints(context);
@@ -129,6 +137,19 @@ namespace CommentService.Api
                     ValidIssuer = authenticationSettings.Issuer,
                     ValidAudience = authenticationSettings.Issuer,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.Key))
+                };
+                cfg.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Cookies.ContainsKey("JWT"))
+                        {
+                            context.Token = context.Request.Cookies["JWT"];
+                        }
+
+                        return Task.CompletedTask;
+                    },
+
                 };
             });
             builder.Services.AddSwaggerGen(options =>

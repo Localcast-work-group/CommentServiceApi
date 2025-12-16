@@ -7,5 +7,6 @@ namespace CommentService.Api.Interfaces.Services
         public Task<GetCommentDTO> Add(CreateCommentDTO createCommentDTO);
         public Task<List<GetCommentDTO>> GetAllForVideo(Guid VideoId);
         public Task Delete(Guid id);
+        Task DeleteAllForVideo(Guid id);
     }
 }

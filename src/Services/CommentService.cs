@@ -30,9 +30,10 @@ namespace CommentService.Api.Services
         [Authorize]
         public async Task<GetCommentDTO> Add(CreateCommentDTO createCommentDTO)
         {
+            VideoCourse videoCourse = await _videoCourseService.GetCourseForVideo(createCommentDTO.VideoId);
             var authResult = _authorizationService.AuthorizeAsync(
                 _userContext.User,
-                createCommentDTO.CourseId,
+                videoCourse.CourseId,
                 new CanAddCommentInCourseRequirement()
                 );
             if (!authResult.Result.Succeeded) throw new UnauthorizedAccessException();
@@ -90,14 +91,31 @@ namespace CommentService.Api.Services
 
         }
 
-        
+        public async  Task DeleteAllForVideo(Guid id)
+        {
+
+            IQueryable<Comment> comments = await _unitOfWork.Comments.GetAllForVideo(id,false);
+            foreach (var model in comments)
+            {
+                await _reactionService.DeleteReactionsForCommentAsync(id);
+                await _unitOfWork.Comments.DeleteChildren(id);
+                await _unitOfWork.Comments.DeleteAsync(model);
+            }
+                await _unitOfWork.SaveChangesAsync();
+
+        }
+
         public async Task<List<GetCommentDTO>> GetAllForVideo(Guid VideoId)
         {
             Guid? UserId = _userContext.UserId;
             VideoCourse? course = await _videoCourseService.GetCourseForVideo(VideoId);
+            if(course == null)
+            {
+                return new List<GetCommentDTO>();
+            }
             var authResult = await _authorizationService.AuthorizeAsync(
                 _userContext.User,
-                course.CourseId,
+                course,
                 new CanSeeCommentsInCourseRequirement()
                 );
             IQueryable<Comment> comments = await _unitOfWork.Comments.GetAllForVideo(VideoId,true);

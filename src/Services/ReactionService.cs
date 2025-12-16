@@ -37,7 +37,7 @@ namespace CommentService.Api.Services
             
             var authorizationResult = await _authorizationService.AuthorizeAsync(
                 _userContext.User,
-                course.CourseId,
+                course,
                 new CanSeeCommentsInCourseRequirement());
 
             if (!authorizationResult.Succeeded)
@@ -92,7 +92,7 @@ namespace CommentService.Api.Services
                 course.CourseId,
                 new CanModerateCommentInCourseRequirement());
 
-            if (!authorizationResult.Succeeded)
+            if (!authorizationResult.Succeeded && _userContext.UserId != comment.UserId)
             {
                 _logger.Warning("User {UserId} attempted to delete reactions in course {courseId} without privileges.", userId, course.CourseId);
                 throw new UnauthorizedAccessException("Access denied.");

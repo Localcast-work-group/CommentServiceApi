@@ -4,37 +4,42 @@ using VideoService.Contracts.Events;
 
 namespace CommentService.Api.Consumers
 {
-    public class VideoCreatedEventConsumer : IConsumer<VideoCreatedEvent>
+    public class VideoDeletedEventConsumer : IConsumer<VideoDeletedEvent>
     {
         private readonly Serilog.ILogger _logger;
+        private readonly ICommentService _commentService;
         private readonly IVideoCourseService _videoCourseService;
-        public VideoCreatedEventConsumer(
+
+        public VideoDeletedEventConsumer(
             Serilog.ILogger logger,
-            IVideoCourseService videoCourseService)
+            ICommentService commentService, IVideoCourseService videoCourseService)
         {
             _logger = logger;
+            _commentService = commentService;
             _videoCourseService = videoCourseService;
         }
-        public async Task Consume(ConsumeContext<VideoCreatedEvent> context)
+        public async Task Consume(ConsumeContext<VideoDeletedEvent> context)
         {
             var message = context.Message;
             _logger.Information(
-                "The VideoCreatedEvent event was received for VideoId {VideoId}",
+                "The VideoDeletedEvent event was received for VideoId {VideoId}",
                 message.Id);
             try
             {
-                await _videoCourseService.CreateCourseVideo(message.Id,message.CourseId,message.AllowAnonymous);
+                await _commentService.DeleteAllForVideo(message.Id);
                 _logger.Information(
-                    "Video {VideoId} course cached",
+                    "Video {VideoId} comments deleted",
                     message.Id);
-
+                await _videoCourseService.DeleteCourseVideo(message.Id);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex,
-                    "Error processing VideoCreatedEvent for VideoId {VideoId}",
+                    "Error processing VideoDeletedEvent for VideoId {VideoId}",
                     message.Id);
             }
         }
     }
+
+
 }

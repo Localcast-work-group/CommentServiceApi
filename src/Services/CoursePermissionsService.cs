@@ -50,6 +50,7 @@ namespace CommentService.Api.Services
 
         public async Task<bool> CanCommentAsync(Guid userId, Guid courseId)
         {
+            
             var key = GetCacheCommentKey(userId, courseId);
 
             var cachedValue = await _cache.GetStringAsync(key);
@@ -60,7 +61,7 @@ namespace CommentService.Api.Services
 
             try
             {
-                var response = await _courseClient.CheckUserPermissionsAsync(courseId, userId);
+                var response = await _courseClient.CheckUserPermissionsAsync(userId,courseId);
                 if (response != null && response.CanModerate )
                 {
                     await CacheModerateAsync(userId, courseId);
@@ -96,7 +97,7 @@ namespace CommentService.Api.Services
 
             try
             {
-                var response = await _courseClient.CheckUserPermissionsAsync(courseId, userId);
+                var response = await _courseClient.CheckUserPermissionsAsync(userId, courseId);
 
                 if (response != null && response.CanWatch)
                 {
@@ -134,7 +135,7 @@ namespace CommentService.Api.Services
 
             try
             {
-                var response = await _courseClient.CheckUserPermissionsAsync(courseId, userId);
+                var response = await _courseClient.CheckUserPermissionsAsync(userId, courseId);
                 if (response != null && response.CanModerate)
                 {
                     await CacheModerateAsync(userId, courseId);

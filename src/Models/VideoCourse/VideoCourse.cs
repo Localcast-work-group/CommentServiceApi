@@ -4,5 +4,6 @@
     {
         public Guid VideoId { get; set; }
         public Guid CourseId { get; set; }
+        public bool IsAllowAnonymousComments { get; set; }
     }
 }

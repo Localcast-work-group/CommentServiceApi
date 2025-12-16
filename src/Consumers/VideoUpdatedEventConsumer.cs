@@ -4,26 +4,26 @@ using VideoService.Contracts.Events;
 
 namespace CommentService.Api.Consumers
 {
-    public class VideoCreatedEventConsumer : IConsumer<VideoCreatedEvent>
+    public class VideoUpdatedEventConsumer : IConsumer<VideoUpdatedEvent>
     {
         private readonly Serilog.ILogger _logger;
         private readonly IVideoCourseService _videoCourseService;
-        public VideoCreatedEventConsumer(
+        public VideoUpdatedEventConsumer(
             Serilog.ILogger logger,
             IVideoCourseService videoCourseService)
         {
             _logger = logger;
             _videoCourseService = videoCourseService;
         }
-        public async Task Consume(ConsumeContext<VideoCreatedEvent> context)
+        public async Task Consume(ConsumeContext<VideoUpdatedEvent> context)
         {
             var message = context.Message;
             _logger.Information(
-                "The VideoCreatedEvent event was received for VideoId {VideoId}",
+                "The VideoUpdatedEvent event was received for VideoId {VideoId}",
                 message.Id);
             try
             {
-                await _videoCourseService.CreateCourseVideo(message.Id,message.CourseId,message.AllowAnonymous);
+                await _videoCourseService.UpdateCourseVideo(message.Id, message.CourseId, message.AllowAnonymous);
                 _logger.Information(
                     "Video {VideoId} course cached",
                     message.Id);
@@ -32,7 +32,7 @@ namespace CommentService.Api.Consumers
             catch (Exception ex)
             {
                 _logger.Error(ex,
-                    "Error processing VideoCreatedEvent for VideoId {VideoId}",
+                    "Error processing VideoUpdatedEvent for VideoId {VideoId}",
                     message.Id);
             }
         }

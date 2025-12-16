@@ -20,18 +20,24 @@ namespace CommentService.Api.Authorization.Handlers
             {
                 context.Succeed(requirement);
                 await Task.CompletedTask;
+                return;
+
             }
             var userIdString = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdString, out var userId))
             {
                 await Task.CompletedTask;
+                return;
+
             }
             bool canManage = await _coursePermissionService.CanCommentAsync(Guid.Parse(userIdString), resource);
 
-            if (!canManage)
+            if (canManage)
             {
                 context.Succeed(requirement);
                 await Task.CompletedTask;
+                return;
+
             }
 
 

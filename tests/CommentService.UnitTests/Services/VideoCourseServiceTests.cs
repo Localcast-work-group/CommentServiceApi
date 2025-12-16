@@ -42,8 +42,9 @@ namespace CommentService.UnitTests.Services
             var videoId = Guid.NewGuid();
             var courseId = Guid.NewGuid();
 
+
             // 2. ACT
-            await _service.CreateCourseVideo(videoId, courseId);
+            await _service.CreateCourseVideo(videoId, courseId,false);
 
             // 3. ASSERT
             _videoCourseRepoMock.Verify(x => x.AddAsync(It.Is<VideoCourse>(vc =>

@@ -61,7 +61,6 @@ namespace CommentService.IntegrationTests.Controllers
             var dto = new CreateCommentDTO
             {
                 VideoId = videoId,
-                CourseId = courseId,
                 Content = "Integration Test Comment"
             };
 

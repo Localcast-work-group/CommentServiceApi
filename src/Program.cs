@@ -4,6 +4,7 @@ using CommentService.Api.Clients.Identity.Configuration;
 using CommentService.Api.Consumers;
 using CommentService.Api.Data;
 using CommentService.Api.Extensions;
+using CommentService.Api.Filters;
 using CommentService.Api.Interfaces;
 using CommentService.Api.Interfaces.Services;
 using CommentService.Api.Services;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
+using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
 using VideoService.Contracts.Clients;
@@ -75,8 +77,14 @@ namespace CommentService.Api
                 var settings = serviceProvider.GetRequiredService<IOptions<IdentitySettings>>().Value;
                 client.BaseAddress = new Uri(settings.Authority);
             })
-            
             .AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration.GetConnectionString("valkey");
+                options.InstanceName = "CommentService_";
+            });
+
             builder.Services.AddMassTransit(
                 options => {
                     options.SetKebabCaseEndpointNameFormatter();
@@ -121,8 +129,10 @@ namespace CommentService.Api
 
             builder.Services.AddOpenApiDocument();
 
-            builder.Services.AddControllers();
-             ;
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<ApiExceptionFilter>();
+            }) ;
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "Bearer";

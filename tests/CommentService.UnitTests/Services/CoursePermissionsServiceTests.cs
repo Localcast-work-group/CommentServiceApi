@@ -57,11 +57,12 @@ namespace CommentService.UnitTests.Services
             var permissions = new UserCoursePermissionsResponse
             {
                 CanComment = true,
+                CourseId = _courseId,
                 CanWatch = true,
                 CanModerate = true
             };
 
-            _courseClientMock.Setup(x => x.CheckUserPermissionsAsync(_courseId, _userId))
+            _courseClientMock.Setup(x => x.CheckUserPermissionsAsync(_userId, _courseId))
                 .ReturnsAsync(permissions);
 
             // 2. ACT

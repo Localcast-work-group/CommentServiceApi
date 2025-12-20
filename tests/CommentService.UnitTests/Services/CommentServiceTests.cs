@@ -57,14 +57,15 @@ namespace CommentService.UnitTests.Services
             // 1. ARRANGE
             var dto = new CreateCommentDTO
             {
-                CourseId = Guid.NewGuid(),
                 VideoId = Guid.NewGuid(),
                 Content = "Test content"
             };
 
+            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(dto.VideoId))
+                .ReturnsAsync(new VideoCourse { CourseId = Guid.NewGuid() });
             _authServiceMock.Setup(x => x.AuthorizeAsync(
                     It.IsAny<ClaimsPrincipal>(),
-                    dto.CourseId,
+                    It.IsAny<Guid>(),
                     It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
 
@@ -90,10 +91,11 @@ namespace CommentService.UnitTests.Services
         public async Task Add_ShouldThrowUnauthorized_WhenAuthorizationFails()
         {
             // 1. ARRANGE
-            var dto = new CreateCommentDTO { CourseId = Guid.NewGuid() };
-
+            var dto = new CreateCommentDTO { Content = "saasdsadsa" };
+            _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(dto.VideoId))
+                .ReturnsAsync(new VideoCourse { CourseId = Guid.NewGuid() });
             _authServiceMock.Setup(x => x.AuthorizeAsync(
-                    It.IsAny<ClaimsPrincipal>(), dto.CourseId, It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                    It.IsAny<ClaimsPrincipal>(), It.IsAny<Guid>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Failed());
 
             // 2. ACT

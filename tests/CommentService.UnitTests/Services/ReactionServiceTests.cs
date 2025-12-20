@@ -63,7 +63,7 @@ namespace CommentService.UnitTests.Services
 
             _authServiceMock.Setup(x => x.AuthorizeAsync(
                     It.IsAny<ClaimsPrincipal>(),
-                    courseId,
+                     It.IsAny<VideoCourse>(),
                     It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
 
@@ -101,7 +101,7 @@ namespace CommentService.UnitTests.Services
             _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(It.IsAny<Guid>()))
                 .ReturnsAsync(new VideoCourse { CourseId = courseId, VideoId = targetId, IsAllowAnonymousComments = true });
 
-            _authServiceMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), courseId, It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            _authServiceMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<VideoCourse>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
 
             _reactionRepoMock.Setup(x => x.GetOneAsync(_currentUserId, targetId))
@@ -131,7 +131,7 @@ namespace CommentService.UnitTests.Services
             _videoCourseServiceMock.Setup(x => x.GetCourseForVideo(It.IsAny<Guid>()))
                 .ReturnsAsync(new VideoCourse { CourseId = courseId, VideoId = targetId, IsAllowAnonymousComments = true });
 
-            _authServiceMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), courseId, It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            _authServiceMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<VideoCourse>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Success());
 
             _reactionRepoMock.Setup(x => x.GetOneAsync(_currentUserId, targetId))
@@ -158,7 +158,7 @@ namespace CommentService.UnitTests.Services
 
             _authServiceMock.Setup(x => x.AuthorizeAsync(
                     It.IsAny<ClaimsPrincipal>(),
-                    courseId,
+                     It.IsAny<VideoCourse>(),
                     It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
                 .ReturnsAsync(AuthorizationResult.Failed());
 

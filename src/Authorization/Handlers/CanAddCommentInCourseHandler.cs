@@ -30,9 +30,9 @@ namespace CommentService.Api.Authorization.Handlers
                 return;
 
             }
-            bool canManage = await _coursePermissionService.CanCommentAsync(Guid.Parse(userIdString), resource);
+            bool canComment = await _coursePermissionService.CanCommentAsync(Guid.Parse(userIdString), resource);
 
-            if (canManage)
+            if (canComment)
             {
                 context.Succeed(requirement);
                 await Task.CompletedTask;

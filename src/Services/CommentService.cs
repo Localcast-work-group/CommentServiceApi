@@ -1,4 +1,5 @@
 ﻿using CommentService.Api.Authorization.Requiremments;
+using CommentService.Api.Exceptions.BusinessRuleValidation;
 using CommentService.Api.Interfaces;
 using CommentService.Api.Interfaces.Services;
 using CommentService.Api.Models.Comment;
@@ -31,6 +32,10 @@ namespace CommentService.Api.Services
         public async Task<GetCommentDTO> Add(CreateCommentDTO createCommentDTO)
         {
             VideoCourse videoCourse = await _videoCourseService.GetCourseForVideo(createCommentDTO.VideoId);
+            if(videoCourse == null)
+            {
+                throw new NotFoundException("Video not found");
+            }
             var authResult = _authorizationService.AuthorizeAsync(
                 _userContext.User,
                 videoCourse.CourseId,

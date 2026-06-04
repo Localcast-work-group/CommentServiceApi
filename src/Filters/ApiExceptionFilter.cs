@@ -29,6 +29,10 @@ namespace CommentService.Api.Filters
             {
                 HandleUnauthorizedAccessException(context, unauthorizedAccessException);
             }
+            else if (context.Exception is NotFoundException notFoundException)
+            {
+                HandleNotFoundException(context, notFoundException);
+            }
             else
             {
                 HandleUnknownException(context, context.Exception);
@@ -97,6 +101,20 @@ namespace CommentService.Api.Filters
             context.Result = new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status500InternalServerError
+            };
+        }
+        private void HandleNotFoundException(ExceptionContext context, Exception exception)
+        {
+            var details = new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "The requested resource was not found.",
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4"
+            };
+
+            context.Result = new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status404NotFound
             };
         }
     }

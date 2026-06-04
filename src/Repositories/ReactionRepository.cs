@@ -20,20 +20,18 @@ namespace CommentService.Api.Repositories
             await _dBContext.AddAsync(model);
         }
 
-        public Task DeleteAsync(Reaction model)
+        public void Delete(Reaction model)
         {
             _dBContext.Remove(model);
-            return Task.CompletedTask;
         }
 
 
-        public Task DeleteReactionsForCommentAsync(Guid videoId)
+        public void DeleteReactionsForComment(Guid videoId)
         {
              _dBContext.Reactions.RemoveRange(_dBContext.Reactions.Where(r => r.TargetId == videoId));
-              return Task.CompletedTask;
         }
 
-        public Task<Reaction> GetOneAsync(Guid videoId, Guid userId)
+        public Task<Reaction?> GetOneAsync(Guid videoId, Guid userId)
         {
             return _dBContext.Reactions.Where(x => x.TargetId == videoId && x.UserId == userId).FirstOrDefaultAsync();
         }

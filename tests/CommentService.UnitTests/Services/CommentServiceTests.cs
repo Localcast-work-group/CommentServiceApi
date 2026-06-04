@@ -136,7 +136,7 @@ namespace CommentService.UnitTests.Services
             // 3. ASSERT
             _reactionServiceMock.Verify(x => x.DeleteReactionsForCommentAsync(commentId), Times.Once);
             _commentRepoMock.Verify(x => x.DeleteChildren(commentId), Times.Once);
-            _commentRepoMock.Verify(x => x.DeleteAsync(comment), Times.Once);
+            _commentRepoMock.Verify(x => x.Delete(comment), Times.Once);
             _uowMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -182,7 +182,7 @@ namespace CommentService.UnitTests.Services
             var mockDbSet = comments.AsQueryable().BuildMock();
 
             _commentRepoMock.Setup(x => x.GetAllForVideo(videoId, true))
-                .ReturnsAsync(mockDbSet); 
+                .Returns(mockDbSet); 
 
             // 2. ACT
             var result = await _service.GetAllForVideo(videoId);

@@ -28,7 +28,7 @@ namespace CommentService.Api.Services
         public async Task ToggleReaction( Guid TargetId, ToggleReactionEnum status)
         {
             Guid userId = _userContext.UserId.Value;
-            Comment comment = await _unitOfWork.Comments.GetByIdAsync(TargetId);
+            Comment? comment = await _unitOfWork.Comments.GetByIdAsync(TargetId);
             VideoCourse? course = await _videoCourseService.GetCourseForVideo(comment.VideoId);
             if (course == null)
             {
@@ -51,7 +51,7 @@ namespace CommentService.Api.Services
             {
                 if (model != null)
                 {
-                    await _unitOfWork.Reactions.DeleteAsync(model);
+                    _unitOfWork.Reactions.Delete(model);
                     await _unitOfWork.SaveChangesAsync();
 
                 }
@@ -97,7 +97,7 @@ namespace CommentService.Api.Services
                 _logger.Warning("User {UserId} attempted to delete reactions in course {courseId} without privileges.", userId, course.CourseId);
                 throw new UnauthorizedAccessException("Access denied.");
             }
-           await _unitOfWork.Reactions.DeleteReactionsForCommentAsync(commentId);
+           _unitOfWork.Reactions.DeleteReactionsForComment(commentId);
            await _unitOfWork.SaveChangesAsync();
         }
 

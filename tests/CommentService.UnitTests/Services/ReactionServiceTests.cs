@@ -141,7 +141,7 @@ namespace CommentService.UnitTests.Services
             await _service.ToggleReaction(targetId, ToggleReactionEnum.Undo);
 
             // 3. ASSERT
-            _reactionRepoMock.Verify(x => x.DeleteAsync(existingReaction), Times.Once);
+            _reactionRepoMock.Verify(x => x.Delete(existingReaction), Times.Once);
             _uowMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -194,7 +194,7 @@ namespace CommentService.UnitTests.Services
             await _service.DeleteReactionsForCommentAsync(commentId);
 
             // 3. ASSERT
-            _reactionRepoMock.Verify(x => x.DeleteReactionsForCommentAsync(commentId), Times.Once);
+            _reactionRepoMock.Verify(x => x.DeleteReactionsForComment(commentId), Times.Once);
             _uowMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         }

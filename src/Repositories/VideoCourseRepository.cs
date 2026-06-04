@@ -18,12 +18,11 @@ namespace CommentService.Api.Repositories
             await _dBContext.AddAsync(model);
         }
 
-        public Task DeleteAsync(VideoCourse model)
+        public void Delete(VideoCourse model)
         {
             _dBContext.Remove(model);
-            return Task.CompletedTask;
         }
-        public Task<VideoCourse> GetOneAsync(Guid videoId)
+        public Task<VideoCourse?> GetOneAsync(Guid videoId)
         {
             return _dBContext.VideoCourses.Where(x => x.VideoId == videoId).FirstOrDefaultAsync();
         }

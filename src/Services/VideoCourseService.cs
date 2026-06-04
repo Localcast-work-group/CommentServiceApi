@@ -54,7 +54,7 @@ namespace CommentService.Api.Services
         public async Task DeleteCourseVideo(Guid id)
         {
             VideoCourse? videoCourse = await _unitOfWork.VideoCourses.GetOneAsync(id);
-            await _unitOfWork.VideoCourses.DeleteAsync(videoCourse);
+            _unitOfWork.VideoCourses.Delete(videoCourse);
             await _unitOfWork.SaveChangesAsync();
         }
 

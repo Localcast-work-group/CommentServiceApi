@@ -89,8 +89,8 @@ namespace CommentService.Api.Services
                 }
 
                 await _reactionService.DeleteReactionsForCommentAsync(id);
-                await _unitOfWork.Comments.DeleteChildren(id);
-                await _unitOfWork.Comments.DeleteAsync(model);
+                _unitOfWork.Comments.DeleteChildren(id);
+                _unitOfWork.Comments.Delete(model);
                 await _unitOfWork.SaveChangesAsync();
             }
 
@@ -99,12 +99,12 @@ namespace CommentService.Api.Services
         public async  Task DeleteAllForVideo(Guid id)
         {
 
-            IQueryable<Comment> comments = await _unitOfWork.Comments.GetAllForVideo(id,false);
+            IQueryable<Comment> comments = _unitOfWork.Comments.GetAllForVideo(id, false);
             foreach (var model in comments)
             {
                 await _reactionService.DeleteReactionsForCommentAsync(id);
-                await _unitOfWork.Comments.DeleteChildren(id);
-                await _unitOfWork.Comments.DeleteAsync(model);
+                _unitOfWork.Comments.DeleteChildren(id);
+                _unitOfWork.Comments.Delete(model);
             }
                 await _unitOfWork.SaveChangesAsync();
 
@@ -123,7 +123,7 @@ namespace CommentService.Api.Services
                 course,
                 new CanSeeCommentsInCourseRequirement()
                 );
-            IQueryable<Comment> comments = await _unitOfWork.Comments.GetAllForVideo(VideoId,true);
+            IQueryable<Comment> comments = _unitOfWork.Comments.GetAllForVideo(VideoId, true);
             IQueryable<GetCommentDTO> model = comments.Select(x => new GetCommentDTO
             {
                 Id = x.Id,
